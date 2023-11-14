@@ -28,7 +28,7 @@ POSTGRES_DB
 ```
 
 
-####Windows:
+**Windows:**
 ```
 //CMD:
 set SOME_VARIABLE=some_value
@@ -36,7 +36,7 @@ set SOME_VARIABLE=some_value
 //Powershell:
 $Env:Foo = 'An example'
 ```
-####Linux:
+**Linux:**
 ```
 export SOME_VARIABLE=some_value
 ```
