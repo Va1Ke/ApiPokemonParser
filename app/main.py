@@ -1,8 +1,10 @@
-import json
+from app.cruds.pokemonCruds import PokemonCruds
 import requests
+from app.database import db
+import asyncio
 
 
-def get_pokemons(url: str, pokemon_list: list, counter: int):
+def get_pokemons(url: str, pokemon_list: list):
     response = requests.get(url)
     for pokemon in response.json().get('results'):
         details = requests.get(pokemon.get('url')).json()
@@ -18,16 +20,21 @@ def get_pokemons(url: str, pokemon_list: list, counter: int):
             'special_attack': pokemon_stats.get('special-attack'),
             'special_defense': pokemon_stats.get('special-defense'),
             'speed': pokemon_stats.get('speed')
-            })
+        })
     if response.json().get('next'):
-        get_pokemons(response.json().get('next'), pokemon_list, counter + 1)
+        get_pokemons(response.json().get('next'), pokemon_list)
 
 
-def store_all_pokemons_to_file(url: str):
+async def pokemons_to_db(url: str):
     pokemon_list = []
-    get_pokemons(url, pokemon_list, 1)
-    with open('data.json', 'w') as f:
-        json.dump(pokemon_list, f)
+    get_pokemons(url, pokemon_list)
+    await PokemonCruds(db=db).add_pokemons(pokemon_list)
 
 
-store_all_pokemons_to_file('https://pokeapi.co/api/v2/pokemon/')
+async def main():
+    await db.connect()
+    await pokemons_to_db('https://pokeapi.co/api/v2/pokemon')
+    await db.disconnect()
+
+
+asyncio.run(main())
