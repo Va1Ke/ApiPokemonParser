@@ -13,8 +13,7 @@ alembic upgrade head
 
 * Use parser:
 ```
-python -m app.parse
-python -m app.insert
+python -m app.main
 ```
 
 ### Set environment variables:

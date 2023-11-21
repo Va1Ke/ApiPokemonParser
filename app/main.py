@@ -4,7 +4,8 @@ from app.database import db
 import asyncio
 
 
-def get_pokemons(url: str, pokemon_list: list):
+def get_pokemons(url: str):
+    pokemon_list = []
     response = requests.get(url)
     for pokemon in response.json().get('results'):
         details = requests.get(pokemon.get('url')).json()
@@ -22,12 +23,12 @@ def get_pokemons(url: str, pokemon_list: list):
             'speed': pokemon_stats.get('speed')
         })
     if response.json().get('next'):
-        get_pokemons(response.json().get('next'), pokemon_list)
+        pokemon_list = pokemon_list + get_pokemons(response.json().get('next'))
+    return pokemon_list
 
 
 async def pokemons_to_db(url: str):
-    pokemon_list = []
-    get_pokemons(url, pokemon_list)
+    pokemon_list = get_pokemons(url)
     await PokemonCruds(db=db).add_pokemons(pokemon_list)
 
 
