@@ -4,16 +4,15 @@ from app.database import db
 import asyncio
 
 
-def get_pokemons(url: str):
-    pokemon_list = []
-    response = requests.get(url)
-    for pokemon in response.json().get('results'):
+def get_stats(pokemons: list):
+    pokemons_details = []
+    for pokemon in pokemons:
         details = requests.get(pokemon.get('url')).json()
         stats = details.get('stats')
         pokemon_stats = {}
         for stat in stats:
             pokemon_stats.update({stat.get('stat').get('name'): stat.get('base_stat')})
-        pokemon_list.append({
+        pokemons_details.append({
             'name': pokemon.get('name'),
             'hp': pokemon_stats.get('hp'),
             'attack': pokemon_stats.get('attack'),
@@ -22,6 +21,12 @@ def get_pokemons(url: str):
             'special_defense': pokemon_stats.get('special-defense'),
             'speed': pokemon_stats.get('speed')
         })
+    return pokemons_details
+
+
+def get_pokemons(url: str):
+    response = requests.get(url)
+    pokemon_list = get_stats(response.json().get('results'))
     if response.json().get('next'):
         pokemon_list = pokemon_list + get_pokemons(response.json().get('next'))
     return pokemon_list
