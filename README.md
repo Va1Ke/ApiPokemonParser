@@ -1,4 +1,4 @@
-# pokemonApiParser
+# ApiPokemonParser
 
 * Update requirements:
 ```
